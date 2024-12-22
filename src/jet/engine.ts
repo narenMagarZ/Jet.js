@@ -2,8 +2,10 @@ import server from "../server";
 
 
 class Engine {
+    protected staticPaths: string[]
     private constructor(missions: any[]) {
         this.buildEngine(missions)
+        this.staticPaths = []
     }
 
     private buildEngine(missions: any[]) {
@@ -12,6 +14,16 @@ class Engine {
             server.on(path, handler);
         })
         return server;
+    }
+
+    protected setStaticPath(path: string) {
+        return this.staticPaths.push(path);
+    }
+
+    private renderAssests() {
+        this.staticPaths.map(path=>{
+            
+        })
     }
 }
 

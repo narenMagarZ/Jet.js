@@ -1,38 +1,52 @@
 import { DEFAULTHOST } from "../constant"
-import server from "../server"
-import { DestinationInterface } from "../interfaces"
+import { CockPitInterface } from "../interfaces"
+import Receiver from "../server/receiver"
+import Sender from "../server/sender"
+import Wrapper from "./wrapper"
+
+export class CockPit implements CockPitInterface {
+    public paths!: Record<string, (req: Receiver, res: Sender)=>void>
+    public constructor() {
+        this.paths = {}
+    }
+    public get(path: string, handler?: (req: Receiver, res: Sender)=>void) {
+        this.paths[path] = handler!
+        return { } as CockPitInterface
+    }
+    public post(path: string, handler?: (req: Receiver, res: Sender)=>void) {
+        this.paths[path] = handler!
+        return {} as CockPitInterface
+    }
+
+    public delete(path: string, handler?: (req: Receiver, res: Sender)=>void) {
+        this.paths[path] = handler!
+        return {} as CockPitInterface
+    }
+
+    public put(path: string, handler?: (req: Receiver, res: Sender)=>void) {
+        this.paths[path] = handler!
+        return {} as CockPitInterface
+    }
+
+}
 
 class Jet {
     private host: string
     private port: number
-    private dests: DestinationInterface[]
+    public cockpit: CockPit
+    private wrapper?: Wrapper
+
     public constructor(
-        host: string, 
         port: number) {
-        this.host = host || DEFAULTHOST
         this.port = port
-        this.dests = []
+        this.host = DEFAULTHOST
+        this.cockpit = new CockPit()
+    }
+    
+    public engine(cb?: ()=>void) {
+        this.wrapper = new Wrapper(this.host, this.port, cb, this.cockpit)
     }
 
-    public boost(cb: ()=>void) {
-        server.listen(
-            this.port, 
-            this.host, 
-            cb
-        )
-    }
-
-    public dest(path: string, handler: ()=>void) {
-        const mission = this.constructMission(path, handler);
-        this.dests.push(mission);
-    }
-
-    private constructMission(path: string, handler: ()=>void) {
-        return {
-            path,
-            handler
-        }
-    }
 }
 
 export default Jet
