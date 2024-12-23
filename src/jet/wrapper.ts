@@ -16,7 +16,7 @@ class Wrapper {
         cb = ()=>{},
         cockpit: CockPit
     ) {
-        this.server = server
+        this.server = server;
         this.host = host;
         this.port = port;
         this.cockPit = cockpit;
@@ -35,10 +35,9 @@ class Wrapper {
                         params
                     } = this.paramsParser(req.url, paths);
                     receiver.params = params;
-                    this.cockPit.paths[Object.keys(params).length > 0 ? matchedUrl : req.url](receiver, sender);
-                } else {
+                    this.cockPit.paths[matchedUrl || req.url](receiver, sender);
                 }
-            })
+            });
             this.server.listen(this.port, this.host, cb);
         }
         
@@ -100,20 +99,20 @@ class Wrapper {
     private replaceAll(str: string) {
         let newStr = str;
         if(str.includes("/")) {
-            newStr = this.replaceAll(str.replace("/"," "))
+            newStr = this.replaceAll(str.replace("/"," "));
         }
-        return newStr
+        return newStr;
     }
 
     private findParams(a: string[], b:string[], params: Record<string, any>) {
         const resultParams = params,
         index = a.findIndex(i=>i.includes(":"));
         if(index < 0) {
-            return resultParams
+            return resultParams;
         }
         resultParams[a[index].replace(":", "")] = b[index];
-        this.findParams(a.slice(index + 1), b.slice(index + 1), resultParams)
-        return resultParams
+        this.findParams(a.slice(index + 1), b.slice(index + 1), resultParams);
+        return resultParams;
     }
 
 }
