@@ -35,18 +35,20 @@ class Jet {
     private port: number
     public cockpit: CockPit
     private wrapper?: Wrapper
-
+    private auto: boolean
     public constructor(
-        port: number) {
+        port: number,
+        auto?: boolean
+    ) {
         this.port = port
         this.host = DEFAULTHOST
         this.cockpit = new CockPit()
+        this.auto = auto || false
     }
     
     public engine(cb?: ()=>void) {
         this.wrapper = new Wrapper(this.host, this.port, cb, this.cockpit)
     }
-
 }
 
 export default Jet

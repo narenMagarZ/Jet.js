@@ -1,9 +1,7 @@
 import http from 'http'
 
 const server = http.
-createServer((req,res)=>{
-    
-})
+createServer();
 
 export default server
 export * from "./receiver";
