@@ -22,19 +22,20 @@ class Wrapper {
         this.cockPit = cockpit;
         if(this.server) {
             this.server.on("request", ( req, res ) =>{
-                console.log(req.url, 'req.url')
-                // TODO: implement dynamic url incase url contains ":"
                 if(req.url) {
-                    const receiver = new Receiver(req);
-                    const sender = new Sender(req, res);
+                    const receiver = new Receiver(req),
+                    sender = new Sender(req, res),
+                    paths: string[] = [];
                     receiver.query = this.queryParser(req.url);
-                    const paths: string[] = [];
                     for(const path of Object.keys(this.cockPit.paths)) {
                         paths.push(path);
                     }
-                    receiver.params = this.paramsParser(req.url, paths);
-                    console.log(receiver.params, 'receiver params')
-                    this.cockPit.paths[req.url](receiver, sender);
+                    const {
+                        matchedUrl,
+                        params
+                    } = this.paramsParser(req.url, paths);
+                    receiver.params = params;
+                    this.cockPit.paths[Object.keys(params).length > 0 ? matchedUrl : req.url](receiver, sender);
                 } else {
                 }
             })
@@ -44,9 +45,9 @@ class Wrapper {
     }
 
     private queryParser(url: string): Record<string, any> {
-        const result = parser.parse(url);
-        const query = result.query;
-        const queries: Record<string, any> = {};
+        const result = parser.parse(url),
+        query = result.query,
+        queries: Record<string, any> = {};
         if(query) {
             const obj = query.split("&");
             obj.map((a)=>{
@@ -62,27 +63,38 @@ class Wrapper {
         return result ? true : false;
     }
 
-    private paramsParser(url: string, paths: string[]): Record<string, any> {
-        const isMatched = this.checkIfUrlMatch(url, paths);
-        let params: {}[] = []
+    private paramsParser(url: string, paths: string[]): {
+        matchedUrl: string,
+        params: Record<string, any>
+    } {
+        const isMatched = this.checkIfUrlMatch(url, paths)
+        let params: Record<string, any> = {},
+        matchedUrl = ""
         if(isMatched) {
-            return params;
+            return {
+                matchedUrl,
+                params
+            };
         }
-        const filteredPaths = paths.filter(path=>path.includes(':'));
-        const requestedPath = this.replaceAll(url);
+        const filteredPaths = paths.filter(path=>path.includes(':')), 
+        requestedPath = this.replaceAll(url);
         for(const path of filteredPaths) {
             const targetPath = this.replaceAll(path);
             if(requestedPath.split(" ").length === targetPath.split(" ").length) {
                 params = this.findParams(
                     targetPath.split(" "), 
                     requestedPath.split(" "), 
-                    [])
+                    {});
             }
-            if(params.length > 0) {
+            if(Object.keys(params).length > 0) {
+                matchedUrl = path;
                 break;
             }
         }
-        return params;
+        return {
+            params,
+            matchedUrl
+        };
     }
 
     private replaceAll(str: string) {
@@ -93,16 +105,13 @@ class Wrapper {
         return newStr
     }
 
-    private findParams(a: string[], b:string[], params: {}[]) {
-        const resultParams = params
-        const index = a.findIndex(i=>i.includes(":"))
+    private findParams(a: string[], b:string[], params: Record<string, any>) {
+        const resultParams = params,
+        index = a.findIndex(i=>i.includes(":"));
         if(index < 0) {
             return resultParams
         }
-        resultParams.push({
-            key: a[index].replace(":",""),
-            value: b[index]
-        })
+        resultParams[a[index].replace(":", "")] = b[index];
         this.findParams(a.slice(index + 1), b.slice(index + 1), resultParams)
         return resultParams
     }

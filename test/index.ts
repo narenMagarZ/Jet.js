@@ -11,13 +11,16 @@ jet.cockpit.get("/api", ( req, res )=>{
 });
 
 jet.cockpit.get("/test/:id", (req, res)=>{
+    console.log(req.params)
     res.json({
-        id: "test/api"
+        id: `test/${req.params.id}`
     })
 });
 jet.cockpit.get("/test/:id/test/:name", (req, res)=>{
+    console.log(req.params.id, req.params.name)
     res.json({
-        id: "test/api"
+        id: req.params.id,
+        name: req.params.name
     })
 });
 

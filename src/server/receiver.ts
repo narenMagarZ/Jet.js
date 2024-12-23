@@ -1,10 +1,9 @@
 import { IncomingMessage } from 'http'
-import { Socket } from 'net'
 
 class Receiver extends IncomingMessage { 
     public query: {}
     public body: {}
-    public params: {}
+    public params: Record<string, any>
     public constructor(req: IncomingMessage) {
         super(req.socket)
         this.query = {}
