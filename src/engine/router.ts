@@ -1,5 +1,5 @@
 import {HttpMethod} from "../enum";
-import {RouterInterface} from "../interfaces/routerInterface";
+import {RouterInterface} from "../interfaces";
 import {Route} from "./route";
 import {handlerType} from "../types";
 
@@ -18,7 +18,6 @@ export class Router implements RouterInterface {
     private addRoutes(httpMethod: HttpMethod, path: string, handlers: handlerType) {
         const route = this.routes[httpMethod];
         route[path] = handlers;
-        console.log(this.routes, 'this.routes')
         return route;
     }
 
