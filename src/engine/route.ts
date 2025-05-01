@@ -1,5 +1,6 @@
 import {BaseRouteInterface} from "../interfaces";
 import {handlerType} from "../types";
+import {HttpMethod} from "../enum";
 
 abstract class BaseRoute implements BaseRouteInterface {
     delete(...handler: handlerType): BaseRouteInterface {
@@ -25,7 +26,13 @@ abstract class BaseRoute implements BaseRouteInterface {
 }
 
 export class Route extends BaseRoute {
+    private routes: Record<string, Record<HttpMethod, handlerType>>;
     constructor(private readonly basePath: string) {
         super();
+        this.routes = {};
+    }
+    get(...handler: handlerType) {
+        console.log("done");
+        return this;
     }
 }

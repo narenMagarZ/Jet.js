@@ -17,20 +17,18 @@ class Jet extends Server {
     }
 
     private async handleRequest(request: Request, response: Response): Promise<void> {
-        // handle middlewares
         for (const middleware of this.middlewares) {
             await middleware(request, response);
         }
+        if(response.finished) return;
 
         const method = request.method?.toUpperCase() as HttpMethod || 'GET',
             url: string = request.url || '/';
         let handlers: handlerType = [];
         for ( const router of this.routers ) {
-            console.log(router, 'router')
             const tempHandlers = [...router.getHandlers(method, url)];
             handlers.push(...tempHandlers);
         }
-        console.log(handlers, 'handlers')
         await this.executeHandlers(handlers, request, response);
     }
 
@@ -38,6 +36,7 @@ class Jet extends Server {
         for(const handler of handlers) {
             await handler(request, response);
         }
+        if(response.finished) return;
     }
 
     public use(...handler: Array<(request: Request, res: Response) => void>) {
