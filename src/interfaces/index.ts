@@ -1,2 +1,1 @@
-export * from "./destinationInterface";
-export * from "./cockpitInterface";
+export * from "./routerInterface";

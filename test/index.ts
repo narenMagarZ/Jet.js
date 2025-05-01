@@ -1,35 +1,39 @@
-import Jet from "../src/jet";
+import Jet from "../src/engine/jet";
 
-const jet = new Jet(4000, true);
+const jet = new Jet();
 
-jet.cockpit.get("/api", ( req, res )=>{
-    console.log(req.url)
-    res.json({
-        name: "naren",
-        age: 25
-    })
-});
-
-jet.cockpit.get("/test/:id", (req, res)=>{
-    console.log(req.params)
-    res.json({
-        id: `test/${req.params.id}`
-    })
-});
-jet.cockpit.get("/test/:id/test/:name", (req, res)=>{
-    console.log(req.params.id, req.params.name)
-    res.json({
-        id: req.params.id,
-        name: req.params.name
-    })
-});
-
-
-jet.engine(()=>{
-    console.log('jet started successfully.')
-});
-
-
-jet.cockpit.get("/dummy", (req, res)=>{
-    res.json({id: "dummy"})
+jet.use(async() => {
+    console.log("request get")
 })
+
+const apiRouter = jet.router();
+const adminRouter = jet.router();
+
+apiRouter.get('/api/v1', (req, res) => {
+    res.json({
+        message: "api fetched successfully"
+    });
+})
+
+apiRouter.get("/api/v2", (req, res) => {
+    res.json({
+        message: "api v2 fetched successfully"
+    })
+})
+
+adminRouter.get("/admin/api/v1", (req, res) => {
+    res.json({
+        message: "admin fetched successfully"
+    })
+})
+
+adminRouter.post("/admin/api/v1", (req, res) => {
+    res.json({
+        message: "admin create user successfully",
+        code: 201
+    })
+})
+
+jet.listen(3000, () => {
+    console.log("server listening on port", 3000)
+});
