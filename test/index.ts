@@ -2,7 +2,7 @@ import Jet from "../src/engine/jet";
 
 const jet = new Jet();
 
-jet.use(async() => {
+jet.use(async(req, res) => {
     console.log("request get")
 })
 
@@ -16,8 +16,11 @@ apiRouter.get('/api/v1', (req, res) => {
 })
 
 apiRouter.get("/api/v2", (req, res) => {
+    req.context.name = "naren"
+}, ( req, res) => {
     res.json({
-        message: "api v2 fetched successfully"
+        message: "api v2 fetched successfully",
+        data: { username: "naren", ...req.context }
     })
 })
 
@@ -32,6 +35,12 @@ adminRouter.post("/admin/api/v1", (req, res) => {
         message: "admin create user successfully",
         code: 201
     })
+})
+
+adminRouter.route("/")
+    .get((req,res) => {})
+    .post((req, res) => {
+
 })
 
 jet.listen(3000, () => {
