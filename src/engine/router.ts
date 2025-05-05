@@ -5,6 +5,7 @@ import {handlerType} from "../types";
 
 export class Router implements RouterInterface {
     private routes: Record<HttpMethod, Record<string, handlerType>>;
+    private _route: Route | null;
     constructor() {
         this.routes = {
             [HttpMethod.GET]: {},
@@ -13,6 +14,7 @@ export class Router implements RouterInterface {
             [HttpMethod.PUT]: {},
             [HttpMethod.PATCH]: {},
         };
+        this._route = null;
     }
 
     private addRoutes(httpMethod: HttpMethod, path: string, handlers: handlerType) {
@@ -41,8 +43,9 @@ export class Router implements RouterInterface {
         this.addRoutes(HttpMethod.PATCH, path, handlers);
     }
 
-    public route(path: string) {
-        return new Route(path);
+    public route(path: string): Route {
+        this._route = new Route(path);
+        return this._route;
     }
 
     public getHandlers(method: HttpMethod, path: string) {
