@@ -32,7 +32,54 @@ export class Route extends BaseRoute {
         this.routes = {};
     }
     get(...handler: handlerType) {
-        console.log("done");
+        this.addRoute(this.basePath, HttpMethod.GET, handler);
         return this;
+    }
+
+    post(...handler: handlerType) {
+        this.addRoute(this.basePath, HttpMethod.POST, handler);
+        return this;
+    }
+
+    put(...handler: handlerType) {
+        this.addRoute(this.basePath, HttpMethod.PUT, handler);
+        return this;
+    }
+
+    delete(...handler: handlerType) {
+        this.addRoute(this.basePath, HttpMethod.DELETE, handler);
+        return this;
+    }
+
+    patch(...handler: handlerType) {
+        this.addRoute(this.basePath, HttpMethod.PATCH, handler);
+        return this;
+    }
+
+    private initializeRoute() {
+        return {
+            [HttpMethod.GET]: [],
+            [HttpMethod.POST]: [],
+            [HttpMethod.DELETE]: [],
+            [HttpMethod.PATCH]: [],
+            [HttpMethod.PUT]: [],
+        }
+    }
+
+    private addRoute(path: string, httpMethod: HttpMethod, handler: handlerType) {
+        const route = this.routes[path];
+        if(route) {
+            this.routes[path] = {
+                ...this.routes[path],
+                [httpMethod]: handler
+            }
+        } else {
+            this.routes[path] = { ...this.initializeRoute(), [httpMethod]: handler}
+        }
+        return this.routes;
+    }
+
+    public getRouteHandler() {
+        return this.routes;
     }
 }
